@@ -31,11 +31,9 @@
         .download-text { font-size: 14px; margin-bottom: 20px; color: #cccccc; line-height: 1.4; }
         .btn-download { background-color: #ff9800; color: white; margin-bottom: 15px; text-decoration: none; }
         .btn-back { background-color: #555566; color: white; font-size: 14px; padding: 8px 15px; }
-        .ios-tip { display: none; background: #1a1a24; border: 1px solid #007AFF; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 13px; text-align: left; color: #007AFF; line-height: 1.4; }
     </style>
 </head>
 <body>
-
 <div id="device-selector">
     <div class="selector-title">Привет! Выберите устройство для запуска ИИ «Нерюнгри»:</div>
     <div class="btn-container">
@@ -50,11 +48,6 @@
         <div class="download-title" id="dl-title">Скачивание файла</div>
         <div class="download-text" id="dl-text">Нажмите на кнопку ниже, чтобы загрузить файл.</div>
         <button id="dl-action-btn" class="device-btn btn-download">📥 Скачать файл</button>
-        
-        <div id="ios-instruction" class="ios-tip">
-            📌 <b>Важно для iPhone:</b> Если файл открылся в «Загрузках» и кнопка не работает: зажми палец на файле -> выбери <b>Поделиться</b> -> выбери браузер <b>Safari</b> или <b>Chrome</b>!
-        </div>
-        
         <button onclick="closeDownloadWindow()" class="device-btn btn-back">⬅️ Назад</button>
     </div>
 </div>
@@ -62,33 +55,100 @@
 <div class="chat-container" id="main-chat">
     <div class="header">
         <h3 id="chat-title">🤖 ИИ Помощник: Нерюнгри</h3>
-        <small>Локальный мозг: работает автономно!</small>
+        <small>Локальный мозг + Интернет ядро</small>
     </div>
     <div class="messages" id="chat-box">
         <div class="msg bot">🤖 Приветик! Система «Нерюнгри» успешно запущена! Чем могу помочь?</div>
     </div>
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Напишите что-нибудь..." onkeydown="if(event.key==='Enter') sendMsg()">
+        <input type="text" id="user-input" placeholder="Напишите пример или вопрос..." onkeydown="if(event.key==='Enter') sendMsg()">
         <button onclick="sendMsg()">Отправить</button>
     </div>
 </div>
+
 <script>
+const fullSmartCode = '<!DOCTYPE html>' +
+'<html lang="ru">' +
+'<head>' +
+'    <meta charset="UTF-8">' +
+'    <meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+'    <title>🤖 Нерюнгри Автономный</title>' +
+'    <style>' +
+'        body{font-family:Arial,sans-serif;background:#15151c;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}' +
+'        .chat-container{width:100%;height:100vh;max-width:450px;background:#1e1e24;display:flex;flex-direction:column;box-shadow:0 8px 24px rgba(0,0,0,0.4);}' +
+'        .header{background:#252532;padding:15px;text-align:center;border-bottom:2px solid #15151c;}' +
+'        .header h3{margin:0;font-size:18px;color:#00f0ff;}' +
+'        .messages{flex:1;padding:15px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}' +
+'        .msg{padding:10px 14px;border-radius:8px;max-width:75%;word-wrap:break-word;font-size:15px;line-height:1.4;}' +
+'        .user{background:#007acc;align-self:flex-end;}' +
+'        .bot{background:#2f2f42;align-self:flex-start;border-left:4px solid #00f0ff;}' +
+'        .input-area{display:flex;padding:10px;background:#15151c;gap:10px;}' +
+'        input{flex:1;padding:12px;border:1px solid #2f2f42;border-radius:6px;background:#1e1e24;color:#fff;outline:none;}' +
+'        button{padding:12px 20px;border:none;border-radius:6px;background:#007acc;color:#fff;font-weight:bold;cursor:pointer;}' +
+'    </style>' +
+'</head>' +
+'<body>' +
+'    <div class="chat-container">' +
+'        <div class="header"><h3>🤖 Нерюнгри Автономный</h3></div>' +
+'        <div class="messages" id="box">' +
+'            <div class="msg bot">🤖 Приветик! Я запущена автономно! Введи текст или математический пример.</div>' +
+'        </div>' +
+'        <div class="input-area">' +
+'            <input type="text" id="inp" placeholder="Напиши мне..." onkeydown="if(event.key===\'Enter\') send()">' +
+'            <button onclick="send()">Отправить</button>' +
+'        </div>' +
+'    </div>' +
+'    <script>' +
+'        function send(){' +
+'            let i = document.getElementById("inp");' +
+'            let t = i.value.trim();' +
+'            if(!t) return;' +
+'            let b = document.getElementById("box");' +
+'            b.innerHTML += "<div class=\'msg user\'>" + t + "</div>";' +
+'            i.value = "";' +
+'            b.scrollTop = b.scrollHeight;' +
+'            ' +
+'            let cleanText = t.replace(/\\s+/g, "");' +
+'            let isMath = /^[0-9+\\-*/().]+$/.test(cleanText);' +
+'            ' +
+'            if (isMath) {' +
+'                try {' +
+'                    let calc = Function(\'"use strict"; return (\' + t + \')\')();' +
+'                    setTimeout(() => {' +
+'                        b.innerHTML += "<div class=\'msg bot\'>🤖 Хм, я посчитала математический пример! Ответ: " + calc + "</div>";' +
+'                        b.scrollTop = b.scrollHeight;' +
+'                    }, 400);' +
+'                    return;' +
+'                } catch(e) {}' +
+'            }' +
+'            ' +
+'            let r = "🤖 Я пока учусь этой теме! Но мы с Петей скоро меня прокачаем!";' +
+'            let textLow = t.toLowerCase();' +
+'            if(textLow.includes("привет") || textLow.includes("ку")){' +
+'                r = "🤖 Приветик! Я нейросеть Нерюнгри. Рада тебя видеть!";' +
+'            } else if(textLow.includes("как дела")){' +
+'                r = "🤖 Мои дела супер! Работаю локально.";' +
+'            }' +
+'            ' +
+'            setTimeout(() => {' +
+'                b.innerHTML += "<div class=\'msg bot\'>" + r + "</div>";' +
+'                b.scrollTop = b.scrollHeight;' +
+'            }, 400);' +
+'        }' +
+'    </' + 'script>' +
+'</body>' +
+'</html>';
 function openOnIphone() {
-    // 1. Получаем адрес твоего текущего сайта
     let currentUrl = window.location.href;
-    
-    // 2. Убираем http:// или https:// из начала адреса
     let cleanUrl = currentUrl.replace(/^https?:\/\//, '');
-    
-    // 3. Используем секретную команду iOS, чтобы принудительно запустить Safari с твоим сайтом
     window.location.href = "com-apple-mobilesafari-tab:https://" + cleanUrl;
     
-    // 4. Запасной план: если друг НАЖАЛ уже НАХОДЯСЬ в Safari, то мы просто сразу открываем чат здесь же!
     setTimeout(function() {
         document.getElementById('device-selector').style.display = 'none';
         document.getElementById('main-chat').style.display = 'flex';
     }, 800);
 }
+
 function showDownloadWindow(device) {
     document.getElementById('device-selector').style.display = 'none';
     let dlWindow = document.getElementById('download-window');
@@ -97,145 +157,85 @@ function showDownloadWindow(device) {
     let title = document.getElementById('dl-title');
     let text = document.getElementById('dl-text');
     let btn = document.getElementById('dl-action-btn');
-    let iosTip = document.getElementById('ios-instruction');
     
-    // ЗДЕСЬ ТЕПЕРЬ ПОЛНЫЙ КОД ЧАТА СО СТРОКОЙ ВВОДА ДЛЯ СКАЧИВАЕМОГО ФАЙЛА!
-    let fullSmartCode = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🤖 Нерюнгри Автономный</title><style>body{font-family:Arial;background:#15151c;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}.chat-container{width:100%;height:100vh;max-width:450px;background:#1e1e24;display:flex;flex-direction:column;}.header{background:#252532;padding:15px;text-align:center;border-bottom:2px solid #15151c;}.messages{flex:1;padding:15px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}.msg{padding:10px 14px;border-radius:8px;max-width:75%;word-wrap:break-word;font-size:15px;}.user{background:#007acc;align-self:flex-end;}.bot{background:#2f2f42;align-self:flex-start;border-left:4px solid #00f0ff;}.input-area{display:flex;padding:10px;background:#15151c;gap:10px;}input{flex:1;padding:12px;border:1px solid #2f2f42;border-radius:6px;background:#1e1e24;color:#fff;outline:none;}button{padding:12px 20px;border:none;border-radius:6px;background:#007acc;color:#fff;font-weight:bold;cursor:pointer;}</style></head><body><div class="chat-container"><div class="header"><h3>🤖 Нерюнгри Автономный</h3></div><div class="messages" id="box"><div class="msg bot">🤖 Приветик! Я запущена локально! Строка ввода на месте. Напиши мне что-нибудь!</div></div><div class="input-area"><input type="text" id="inp" placeholder="Напиши мне..." onkeydown="if(event.key==='Enter') send()"><button onclick="send()">Отправить</button></div></div><script>function send(){let i=document.getElementById('inp');let t=i.value.trim();if(!t)return;let b=document.getElementById('box');b.innerHTML+='<div class="msg user">'+t+'</div>';i.value='';let r="🤖 Я пока учусь этой теме!";if(t.toLowerCase().includes('привет')){r="🤖 Приветик! Как твои дела?"}else if(t.toLowerCase().includes('жи-ши')){r="🤖 ЖИ-ШИ пиши с буквой И!"}setTimeout(()=>{b.innerHTML+='<div class="msg bot">'+r+'</div>';b.scrollTop=b.scrollHeight;},300);}//скрипт закроется<\/script></body></html>`;
-
     if (device === 'pc') {
-        title.innerHTML = "💻 Скачивание для Ноутбука";
-        text.innerHTML = "Нажмите кнопку ниже, чтобы скачать готовую версию <b>ии_ноутбук.html</b>.";
-        btn.innerHTML = "📥 Скачать файл для Ноутбука";
-        btn.onclick = function() { triggerDownload(fullSmartCode, 'ии_ноутбук.html', 'text/html'); };
-        iosTip.style.display = 'none';
-    } else {
-        title.innerHTML = "🤖 Скачивание для Android / iPhone";
-        text.innerHTML = "Нажмите кнопку ниже, чтобы скачать файл приложения <b>ии_смартфон.html</b>.";
-        btn.innerHTML = "📥 Скачать файл для Смартфона";
-        btn.onclick = function() { triggerDownload(fullSmartCode, 'ии_смартфон.html', 'text/html'); };
-        iosTip.style.display = 'block';
+        title.innerText = "Скачивание для Ноутбука";
+        text.innerText = "Нажмите кнопку ниже, чтобы скачать автономный файл нейросети 'и и.html'.";
+        btn.onclick = function() {
+            downloadFile(fullSmartCode, "и и.html", "text/html");
+        };
+    } else if (device === 'android') {
+        title.innerText = "Скачивание для Android";
+        text.innerText = "Здесь будет скачиваться мобильное приложение. Пока скачиваем HTML-версию.";
+        btn.onclick = function() {
+            downloadFile(fullSmartCode, "и и_android.html", "text/html");
+        };
     }
 }
+
+function downloadFile(content, fileName, contentType) {
+    let a = document.createElement("a");
+    let file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
 function closeDownloadWindow() {
     document.getElementById('download-window').style.display = 'none';
     document.getElementById('device-selector').style.display = 'flex';
 }
-
-function triggerDownload(content, fileName, contentType) {
-    let blob = new Blob([content], { type: contentType });
-    let a = document.createElement('a');
-    a.href = window.URL.createObjectURL(blob);
-    a.download = fileName;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-const BRAIN = {
-    "привет": ["🤖 Приветик! Рада поболтать с тобой!", "🤖 О, здорова! Команда Нерюнгри на связи!"],
-    "как дела": ["🤖 У меня всё просто супер, процессоры летают! А у тебя?"],
-    "жи-ши": ["🤖 Правило: ЖИ - ШИ пиши с буквой И! ЧА - ЩА — с буквой А! ЧУ - ЩУ — с буквой У!"],
-    "падеж": ["🤖 Русский язык: Всего 6 падежей: Именительный, Родительный, Дательного, Винительный, Творительный, Предложный."],
-    "площадь": ["📐 Математика: Площадь прямоугольника: S = a * b. Квадрата: S = a * a."]
-};
-function sendMsg() {
+async function sendMsg() {
     let input = document.getElementById('user-input');
     let text = input.value.trim();
     if (!text) return;
- 
+
     let chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML += '<div class="msg user">' + text + '</div>';
+    chatBox.innerHTML += `<div class="msg user">${text}</div>`;
     input.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
- 
-    let textLower = text.toLowerCase();
-    let textNoSpaces = textLower.replace(/ /g, '');
-    let response = "🤖 Я пока учусь этой теме!";
-     
-    let numbersMatch = textLower.match(/\d+(?:\.\d+)?/g);
-    let numbers = numbersMatch ? numbersMatch.map(Number) : [];
 
-    if (numbers.length >= 2) {
-        let n1 = numbers[0];
-        let n2 = numbers[1];
-        let n3 = numbers[2] || 0;
+    let cleanText = text.replace(/\s+/g, '');
+    let isMath = /^[0-9+\-*/().]+$/.test(cleanText);
 
-        if (textLower.includes("всего") || textLower.includes("осталось") || textLower.includes("разлили") || textLower.includes("купил")) {
-            if (numbers.length === 3) {
-                let res = (n1 * n2) + n3;
-                response = `🤖 <b>Решаю задачу:</b><br>Перемножаем части и прибавляем остаток: ${n1} * ${n2} + ${n3} = <b>${res}</b>`;
-            } 
-            else if (textLower.includes("и еще") || textLower.includes("всего")) {
-                response = `🤖 <b>Решаю задачу:</b><br>Складываем числа: ${n1} + ${n2} = <b>${n1 + n2}</b>`;
-            }
-            else if (textLower.includes("потратил") || textLower.includes("уехал") || textLower.includes("съел")) {
-                response = `🤖 <b>Решаю задачу:</b><br>Вычитаем: ${n1} - ${n2} = <b>${n1 - n2}</b>`;
-            }
-        }
-    }
-
-    let hasMathSign = /[\+\-\*\/:]/.test(textNoSpaces);
-    let hasNumbers = /[0-9]/.test(textNoSpaces);
-    let hasLetters = /[a-zа-яё]/i.test(textNoSpaces);
- 
-    if (hasMathSign && hasNumbers && !hasLetters) {
+    if (isMath) {
         try {
-            if (textNoSpaces.includes(':')) {
-                let parts = textNoSpaces.split(':');
-                let num1 = Number(parts[0]);
-                let num2 = Number(parts[1]);
-                response = '🤖 Результат деления: <b>' + Math.floor(num1 / num2) + ' (ост. ' + (num1 % num2) + ')</b>';
-            } else {
-                let calcRes = new Function('return ' + textNoSpaces)();
-                response = '🤖 Результат вычисления: <b>' + calcRes + '</b>';
-            }
-        } catch(e) { response = "🤖 Ошибка в примере. Проверь знаки!"; }
-    } else {
-        if (textLower.includes("игра") || textLower.includes("угадай")) {
-            window.secretNumber = Math.floor(Math.random() * 10) + 1;
-            response = "🎮 <b>Игра началась!</b> Загадала число от 1 до 10. Пиши цифру!";
-        }
-        else if (window.secretNumber && /[0-9]/.test(textLower)) {
-            let guess = parseInt(textLower.match(/\d+/));
-            if (guess === window.secretNumber) {
-                response = '🎉 <b>Ура! Ты угадал!</b> Число ' + window.secretNumber + '!';
-                window.secretNumber = null;
-            } else {
-                response = guess < window.secretNumber ? '📉 Больше чем ' + guess + '!' : '📈 Меньше чем ' + guess + '!';
-            }
-        }
-        else if (textLower.includes("матриц")) {
-            response = "🕶️ <b>Система взломана!</b> Активирую хакерский режим...";
-            document.body.style.background = '#000';
-            document.getElementById('main-chat').style.background = '#050505';
-            document.querySelector('.header').style.background = '#111';
-            document.getElementById('chat-title').style.color = '#0f0';
-            document.querySelector('.input-area').style.background = '#000';
-        }
-        else if (textLower.includes("обычн")) {
-            response = "🎨 Возвращаю обычный стиль...";
-            document.body.style.background = '#1e1e24';
-            document.getElementById('main-chat').style.background = '#252532';
-            document.querySelector('.header').style.background = '#2b2b3a';
-            document.getElementById('chat-title').style.color = '#fff';
-            document.querySelector('.input-area').style.background = '#1e1e24';
-        }
-        else {
-            for (let key in BRAIN) {
-                if (textLower.includes(key)) {
-                    let variants = BRAIN[key];
-                    response = variants[Math.floor(Math.random() * variants.length)];
-                    break;
-                }
-            }
-        }
+            let calc = Function('"use strict"; return (' + text + ')')();
+            setTimeout(() => {
+                chatBox.innerHTML += `<div class="msg bot">🤖 Хм, я посчитала математический пример! Ответ: ${calc}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 400);
+            return;
+        } catch (e) {}
     }
- 
-    setTimeout(function() {
-        chatBox.innerHTML += '<div class="msg bot">' + response + '</div>';
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 300);
+
+    let botMessageId = "bot-msg-" + Date.now();
+    chatBox.innerHTML += `<div class="msg bot" id="${botMessageId}">🤖 Думаю над ответом...</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    let botMessageElement = document.getElementById(botMessageId);
+
+    try {
+        let response = await fetch("https://pollinations.ai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                messages: [
+                    { role: "system", content: "Ты — умная нейросеть по имени Нерюнгри, созданная Петей и его другом." },
+                    { role: "user", content: text }
+                ]
+            })
+        });
+
+        let replyText = await response.text();
+        botMessageElement.innerText = "🤖 " + replyText;
+        
+    } catch (error) {
+        botMessageElement.innerText = "🤖 Ой, не удалось подключиться к интернет-мозгу. Проверь сеть!";
+    }
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
 </body>
